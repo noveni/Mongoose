@@ -4,25 +4,17 @@ require_once (dirname(__file__) . '/../../classes/MongooseProduct.php');
 
 class AdminMongooseImportController extends ModuleAdminController
 {
-	private $current_step;
-	private $id_mongoose_supplier;
-	private $src_file;
-	private $src_line_total;
-	private $src_id_lang;
-	private $src_current_line;
-	private $src_content;
+	private $current_import_step;
+	private $current_key_in_xml;
+	private $xml_filename;
+	private $xml_line_count;
+	private $xml_content;
 
-	// private $current_import_step;
-	// private $current_key_in_xml;
-	// private $xml_filename;
-	// private $xml_line_count;
-	// private $xml_content;
+	private $xml_lang;
 
-	// private $xml_lang;
+	private $mg_errors = array(); //MonGoose errors Tools::displayError();
 
-	private $importation_errors = array(); //MonGoose errors Tools::displayError();
-
-	// private $mongoose_product_current_row;
+	private $mongoose_product_current_row;
 
 	
 	public function __construct()
@@ -31,72 +23,72 @@ class AdminMongooseImportController extends ModuleAdminController
 		$this->bootstrap = true;
 
 		//Check the step value;
-		// $this->current_import_step = (int)Configuration::get('MONGOOSE_CURRENT_IMPORT_STEP');
-		// $this->current_key_in_xml = (int)Configuration::get('MONGOOSE_CURRENT_KEY_IN_XML');
-		// $this->xml_filename = Configuration::get('MONGOOSE_XML_FILENAME');
-		// $this->xml_line_count = Configuration::get('MONGOOSE_XML_LINECOUNT');
-		// $this->xml_lang = Configuration::get('MONGOOSE_XML_LANG');
+		$this->current_import_step = (int)Configuration::get('MONGOOSE_CURRENT_IMPORT_STEP');
+		$this->current_key_in_xml = (int)Configuration::get('MONGOOSE_CURRENT_KEY_IN_XML');
+		$this->xml_filename = Configuration::get('MONGOOSE_XML_FILENAME');
+		$this->xml_line_count = Configuration::get('MONGOOSE_XML_LINECOUNT');
+		$this->xml_lang = Configuration::get('MONGOOSE_XML_LANG');
 	}
 
 	public function setMedia()
 	{
 		parent::setMedia();
-		//$this->addJS(__PS_BASE_URI__.'modules/'.$this->module->name.'/js/mongooseimport1.js');
+		$this->addJS(__PS_BASE_URI__.'modules/'.$this->module->name.'/js/mongooseimport1.js');
 	}
 
 	public function renderList()
 	{
 		$_html = "";
 
-		if($this->current_step == 0)
-			$_html .= $this->module->display(_MODULE_DIR_.'mongoose', 'views/templates/admin/import_general.tpl');
-		// if(isset($_POST["submitStep1Mongoose"]) && $_POST["submitStep1Mongoose"]==1) //Step 1 Submit
-		// {
-		// 	//On importe le fichier
-		// 	$result = $this->uploadXml();
-		// 	if(isset($result['file']['error']) && !empty($result['file']['error']))
-		// 		$_html .= $this->module->displayError($result['file']['error']);
-		// 	else
-		// 	{
-		// 		$_html .= $this->module->displayConfirmation($result['file']['filename']);
-		// 		$this->changeStep(1);
-		// 		$this->xml_lang = $_POST['xml_lang'];
-		// 		Configuration::updateValue('MONGOOSE_XML_LANG',$this->xml_lang);
-		// 		$this->xml_filename = $result['file']['filename'];
-		// 		Configuration::updateValue('MONGOOSE_XML_FILENAME',$this->xml_filename);
-		// 		Configuration::updateValue('MONGOOSE_CURRENT_KEY_IN_XML',0);
-		// 		$this->xml_content = simplexml_load_file($this->getPath($this->xml_filename));
-		// 		$this->xml_line_count = count($this->xml_content);
-		// 		Configuration::updateValue('MONGOOSE_XML_LINECOUNT',(int)$this->xml_line_count);
-		// 	}
-		// }
+		if(isset($_POST["submitStep1Mongoose"]) && $_POST["submitStep1Mongoose"]==1) //Step 1 Submit
+		{
+			//On importe le fichier
+			$result = $this->uploadXml();
+			if(isset($result['file']['error']) && !empty($result['file']['error']))
+				$_html .= $this->module->displayError($result['file']['error']);
+			else
+			{
+				$_html .= $this->module->displayConfirmation($result['file']['filename']);
+				$this->changeStep(1);
+				$this->xml_lang = $_POST['xml_lang'];
+				Configuration::updateValue('MONGOOSE_XML_LANG',$this->xml_lang);
+				$this->xml_filename = $result['file']['filename'];
+				Configuration::updateValue('MONGOOSE_XML_FILENAME',$this->xml_filename);
+				Configuration::updateValue('MONGOOSE_CURRENT_KEY_IN_XML',0);
+				$this->xml_content = simplexml_load_file($this->getPath($this->xml_filename));
+				$this->xml_line_count = count($this->xml_content);
+				Configuration::updateValue('MONGOOSE_XML_LINECOUNT',(int)$this->xml_line_count);
+			}
+		}
 
-		// if(isset($_POST['submitTestImporter']) && $_POST['submitTestImporter']==1)
-		// {
-		// 	$this->xml_content = simplexml_load_file($this->getPath($this->xml_filename));
-		// 	$this->importProductFromXml($this->xml_content->product[21]);
+		if(isset($_POST['submitTestImporter']) && $_POST['submitTestImporter']==1)
+		{
+			$this->xml_content = simplexml_load_file($this->getPath($this->xml_filename));
+			$this->importProductFromXml($this->xml_content->product[21]);
 
-		// }
+		}
 
-		// if(isset($_POST['submitGoToStep3']) && $_POST['submitGoToStep3']==1)
-		// 	$this->changeStep(2);
+		if(isset($_POST['submitGoToStep3']) && $_POST['submitGoToStep3']==1)
+		{
+			$this->changeStep(2);
+		}
 
-		// // Get the current step
-		// $this->checkCurrentStep();
-		// if(!$this->checkTheXMLExist())
-		// {
-		// 	if($this->xml_filename != '')
-		// 		$_html .= $this->module->displayError('The xml file doesn\'t exist. You need to re-upload it.');
-		// }
+		// Get the current step
+		$this->checkCurrentStep();
+		if(!$this->checkTheXMLExist())
+		{
+			if($this->xml_filename != '')
+				$_html .= $this->module->displayError('The xml file doesn\'t exist. You need to re-upload it.');
+		}
 
-		// $_html .= $this->module->display(_MODULE_DIR_.'mongoose', 'views/templates/admin/importStepBreadcrumb.tpl');
+		$_html .= $this->module->display(_MODULE_DIR_.'mongoose', 'views/templates/admin/importStepBreadcrumb.tpl');
 
-		// if($this->current_import_step === 0)
-		// 	$_html .= $this->stepOne();
-		// elseif($this->current_import_step === 1)
-		// 	$_html .= $this->stepTwo();
-		// elseif($this->current_import_step === 2)
-		// 	$_html .= $this->stepThree();
+		if($this->current_import_step === 0)
+			$_html .= $this->stepOne();
+		elseif($this->current_import_step === 1)
+			$_html .= $this->stepTwo();
+		elseif($this->current_import_step === 2)
+			$_html .= $this->stepThree();
 
 		return $_html.parent::renderList();
 	}

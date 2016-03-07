@@ -1,4 +1,5 @@
 <?php
+$supplier_name = 'no';
 
 class MongooseProduct extends ObjectModel
 {
@@ -24,27 +25,29 @@ class MongooseProduct extends ObjectModel
 	public $description;
 	public $link_rewrite;
 
+	
+
 	public static $definition = array(
-		'table' => 'mongoose_product',
-		'primary' => 'id_mongoose_product',
+		'table' => 'mongoose_'.$supplier_name.'_product',
+		'primary' => 'id_mongoose_'.$supplier_name.'_product',
 		'multilang' => TRUE,
 		'fields' => array(
-			'id_product_from_supplier' =>	array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
-			'reference' => 					array('type' => self::TYPE_STRING,'validate' => 'isReference'),
-			'ean13' => 						array('type' => self::TYPE_STRING, 'validate' => 'isEan13'),
-			'date_add' => 					array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-			'date_upd' => 					array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
-			'price' => 						array('type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true),
-			'wholesale_price' =>			array('type' => self::TYPE_FLOAT, 'validate' => 'isPrice'),
-			'quantity' =>					array('type' => self::TYPE_INT,'validate' => 'isUnsignedInt'),
-			'pics_list' => 					array('type' => self::TYPE_STRING,'validate' => 'isString'),
-			'depth' => 						array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
-			'width' => 						array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
-			'height' => 					array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
-			'weight' => 					array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
-			'supplier' => 					array('type' => self::TYPE_STRING, 'validate' => 'isString'),
-			'id_mongoose_category' =>		array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-			'id_mongoose_manufacturer' => 	array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
+			'id_product_'.$supplier_name.'_supplier' =>			array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
+			'id_supplier' => 					array('type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true),
+			'reference' => 						array('type' => self::TYPE_STRING,'validate' => 'isReference'),
+			'ean13' => 							array('type' => self::TYPE_STRING, 'validate' => 'isEan13'),
+			'date_add' => 						array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
+			'date_upd' => 						array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat'),
+			'price' => 							array('type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true),
+			'wholesale_price' =>				array('type' => self::TYPE_FLOAT, 'validate' => 'isPrice'),
+			'quantity' =>						array('type' => self::TYPE_INT,'validate' => 'isUnsignedInt'),
+			'pics_list' => 						array('type' => self::TYPE_STRING,'validate' => 'isString'),
+			'depth' => 							array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
+			'width' => 							array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
+			'height' => 						array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
+			'weight' => 						array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat'),
+			'id_default_category_supplier' =>	array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
+			'id_manufacturer_supplier' => 		array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
 
 			/* Lang fields */
 			'name' =>						array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true),

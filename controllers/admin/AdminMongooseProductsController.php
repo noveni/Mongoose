@@ -1,5 +1,7 @@
 <?php
+
 require_once (dirname(__file__) . '/../../classes/MongooseProduct.php');
+require_once (dirname(__FILE__) . '/../../classes/MongooseSupplierConfig.php');
 
 class AdminMongooseProductsController extends ModuleAdminController
 {
